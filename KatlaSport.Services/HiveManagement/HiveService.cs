@@ -67,9 +67,6 @@ namespace KatlaSport.Services.HiveManagement
             dbHive.CreatedBy = _userContext.UserId;
             dbHive.LastUpdatedBy = _userContext.UserId;
             _context.Hives.Add(dbHive);
-
-            //_context.SaveChanges();
-
             return Mapper.Map<Hive>(dbHive);
         }
 
@@ -92,9 +89,6 @@ namespace KatlaSport.Services.HiveManagement
 
             Mapper.Map(updateRequest, dbHive);
             dbHive.LastUpdatedBy = _userContext.UserId;
-
-            //_context.SaveChanges();
-
             return Mapper.Map<Hive>(dbHive);
         }
 
@@ -114,13 +108,26 @@ namespace KatlaSport.Services.HiveManagement
             }
 
             _context.Hives.Remove(dbHive);
-            //_context.SaveChanges();
         }
 
         /// <inheritdoc/>
         public async Task SetStatusAsync(int hiveId, bool deletedStatus)
         {
-            throw new NotImplementedException();
+            var dbCategories = await _context.Hives.Where(c => hiveId == c.Id).ToArrayAsync();
+
+            if (dbCategories.Length == 0)
+            {
+                throw new RequestedResourceNotFoundException();
+            }
+
+            var dbCategory = dbCategories[0];
+            if (dbCategory.IsDeleted != deletedStatus)
+            {
+                dbCategory.IsDeleted = deletedStatus;
+                dbCategory.LastUpdated = DateTime.UtcNow;
+                dbCategory.LastUpdatedBy = _userContext.UserId;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
