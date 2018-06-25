@@ -16,7 +16,7 @@ namespace KatlaSport.WebApi.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     [CustomExceptionFilter]
     [SwaggerResponseRemoveDefaults]
-    public class    HivesController : ApiController
+    public class HivesController : ApiController
     {
         private readonly IHiveService _hiveService;
         private readonly IHiveSectionService _hiveSectionService;
@@ -84,7 +84,7 @@ namespace KatlaSport.WebApi.Controllers
             }
 
             var hive = await _hiveService.CreateHiveAsync(createRequest);
-            var location = string.Format($"/api/hives/{hive.Id}");
+            var location = string.Format("/api/hives/{0}", hive.Id);
             return Created<Hive>(location, hive);
         }
 
